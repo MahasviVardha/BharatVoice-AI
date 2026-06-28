@@ -38,10 +38,6 @@ services:
         value: "https://bharatvoice-frontend.onrender.com" # update if Render renamed your frontend service
       - key: UPLOAD_DIR
         value: /var/data/uploads
-    disk:
-      name: uploads
-      mountPath: /var/data
-      sizeGB: 1
 
   - type: web
     name: bharatvoice-frontend
