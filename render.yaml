@@ -1,0 +1,58 @@
+# Render Blueprint — deploys the ENTIRE app on Render: connect this repo at
+# https://dashboard.render.com/blueprints and Render provisions all three
+# resources below in one go (Postgres DB, backend API, frontend static site).
+#
+# IMPORTANT — Vite env vars are baked into the JS bundle at BUILD time, not
+# read at runtime. That means VITE_API_BASE below must already be correct
+# before the frontend's build step runs. It's set here to the backend's
+# expected default Render URL (https://<service name>.onrender.com). If
+# Render had to rename your backend service (e.g. "bharatvoice-backend-2"
+# because the name was taken), update VITE_API_BASE to match and trigger a
+# manual redeploy of the frontend.
+
+databases:
+  - name: bharatvoice-db
+    plan: free
+    databaseName: bharatvoice
+    user: bharatvoice
+
+services:
+  - type: web
+    name: bharatvoice-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    envVars:
+      - key: ENV
+        value: production
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bharatvoice-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: "https://bharatvoice-frontend.onrender.com" # update if Render renamed your frontend service
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+    disk:
+      name: uploads
+      mountPath: /var/data
+      sizeGB: 1
+
+  - type: web
+    name: bharatvoice-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE
+        value: "https://bharatvoice-backend.onrender.com" # update if Render renamed your backend service
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

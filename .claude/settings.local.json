@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la)",
+      "Bash(powershell -c \"Get-ChildItem\")",
+      "Bash(python -m pip install -r requirements.txt -q)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8000/login\" -Method Post -ContentType \"application/json\" -Body '{\"email\":\"demo@bharatvoice.ai\",\"password\":\"demo1234\"}')",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8000/\")",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8000/products\")",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Process -Id 16328 -ErrorAction SilentlyContinue)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8010/\")",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8010/products\")",
+      "PowerShell(try { Invoke-WebRequest -Uri \"http://localhost:5173/src/main.jsx\" -UseBasicParsing | Select-Object -ExpandProperty Content } catch { $_.Exception.Response | Out-String })",
+      "PowerShell(Stop-Process -Id 1684 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(\"killed\")",
+      "mcp__Claude_Preview__preview_start",
+      "PowerShell(Get-Process -Id 22856 -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Process python -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8010 -ErrorAction SilentlyContinue)",
+      "PowerShell(python -m pip install openpyxl 2>&1)"
+    ]
+  }
+}
