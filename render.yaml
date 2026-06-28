@@ -26,6 +26,8 @@ services:
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
       - key: ENV
         value: production
       - key: JWT_SECRET_KEY
@@ -35,7 +37,7 @@ services:
           name: bharatvoice-db
           property: connectionString
       - key: CORS_ORIGINS
-        value: "https://bharatvoice-frontend.onrender.com" # update if Render renamed your frontend service
+        value: "https://bharatvoice-frontend.onrender.com"
       - key: UPLOAD_DIR
         value: /var/data/uploads
 
@@ -47,7 +49,7 @@ services:
     staticPublishPath: ./dist
     envVars:
       - key: VITE_API_BASE
-        value: "https://bharatvoice-backend.onrender.com" # update if Render renamed your backend service
+        value: "https://bharatvoice-backend.onrender.com"
     routes:
       - type: rewrite
         source: /*
