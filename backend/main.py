@@ -18,6 +18,28 @@ from config import UPLOAD_DIR, MAX_UPLOAD_BYTES, CORS_ORIGINS
 
 Base.metadata.create_all(bind=engine)
 
+def seed_products():
+    db = next(get_db())
+    try:
+        if db.query(models.Product).count() == 0:
+            defaults = [
+                ("Amazon", "E-commerce"),
+                ("Flipkart", "E-commerce"),
+                ("Swiggy", "Food Delivery"),
+                ("Zomato", "Food Delivery"),
+                ("PhonePe", "Fintech"),
+                ("Netflix", "Entertainment"),
+                ("Ola", "Transport"),
+                ("Uber", "Transport"),
+            ]
+            for name, cat in defaults:
+                db.add(models.Product(name=name, category=cat))
+            db.commit()
+    finally:
+        db.close()
+
+seed_products()
+
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/tmp/uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)  # ← add this line
 
