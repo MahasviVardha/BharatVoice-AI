@@ -19,6 +19,7 @@ from config import UPLOAD_DIR, MAX_UPLOAD_BYTES, CORS_ORIGINS
 Base.metadata.create_all(bind=engine)
 
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/tmp/uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)  # ← add this line
 
 app = FastAPI(title="BharatVoice AI")
 
