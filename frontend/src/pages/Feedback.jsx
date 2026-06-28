@@ -30,10 +30,12 @@ export default function Feedback() {
     api.get("/products").then((res) => {
       setProducts(res.data);
       if (res.data.length) setPlatformId(res.data[0].id);
+    }).catch(() => {
+      // fallback to default products if API fails
     });
   }, []);
 
-  const platformList = products.length ? products : DEFAULT_PRODUCTS.map((n, i) => ({ id: i, name: n }));
+  const platformList = products.length ? products : DEFAULT_PRODUCTS.map((n, i) => ({ id: i + 1, name: n }));
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -61,6 +63,14 @@ export default function Feedback() {
       setError("Please enter the platform name.");
       return;
     }
+    if (!platformId) {
+      setError("Please select a platform.");
+      return;
+    }
+    if (!text.trim()) {
+      setError("Please enter your feedback text.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -71,9 +81,9 @@ export default function Feedback() {
       }
 
       const formData = new FormData();
-      formData.append("product_id", pid);
+      formData.append("product_id", String(Number(pid)));
       formData.append("language", language);
-      formData.append("text", text);
+      formData.append("text", text.trim());
       formData.append("category", finalCategory);
       if (productName.trim()) formData.append("product_name", productName.trim());
       if (image) formData.append("image", image);
@@ -81,7 +91,18 @@ export default function Feedback() {
       const { data } = await api.post("/feedback", formData);
       navigate(`/feedback/${data.id}`);
     } catch (err) {
-      setError(err.response?.data?.detail || "Please login first to submit feedback.");
+      const detail = err.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        setError(detail.map((d) => d.msg || String(d)).join(", "));
+      } else if (typeof detail === "string") {
+        setError(detail);
+      } else if (err.response?.status === 401) {
+        setError("Please login first to submit feedback.");
+      } else if (err.response?.status === 422) {
+        setError("Invalid form data. Please check all fields and try again.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
